@@ -1,0 +1,19 @@
+﻿@model AdventureProject.Models.ViewModels.PlayerCharacter
+@{
+    ViewData["Title"] = "Character Creation";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Character Creation</h1>
+    <h3>@ViewBag.message</h3>
+    @using (Html.BeginForm("CreateCharacter", "Character", FormMethod.Post))
+            {
+            <table>
+                <tr>
+                    <td>Name: </td>
+                    <td><input type="text" name="characterName" id="characterName" /></td>
+                </tr>                
+            </table>
+            <input type="submit" value="Submit" />
+            }
+</div>
