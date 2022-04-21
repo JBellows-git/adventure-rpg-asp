@@ -1,0 +1,29 @@
+﻿@model AdventureProject.Models.ViewModels.GameModel
+@{
+    ViewData["Title"] = "Play the Game!";
+}
+
+<div class="text-center">
+    <h1 class="display-4"></h1>
+    <div style="float: left">
+        <h3>@Model.Player.CharacterName</h3>
+        <table>
+            <tr>
+                <td>Level: </td><td>@Model.Player.Level</td><td></td>
+            </tr>
+            <tr>
+                <td>Hit Points: </td><td>@Model.Player.CurrentHitPoints /</td><td>@Model.Player.MaximumHitPoints</td>                
+            </tr>
+            <tr>
+                <td>Experience Points: </td><td>@Model.Player.ExperiencePoints</td><td></td>
+            </tr>
+            <tr>
+                <td>Exp To Level: </td><td>@Model.Player.ExpNeededToLevel</td><td></td>
+            </tr>
+            <tr>
+                <td>Weapon: </td><td>@Model.Player.CurrentWeapon.Name</td><td>@Model.Player.CurrentWeapon.MinimumDamage - @Model.Player.CurrentWeapon.MaximumDamage</td>
+            </tr>
+            <tr></tr>
+        </table>
+    </div>
+</div>

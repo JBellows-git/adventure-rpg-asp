@@ -13,8 +13,8 @@ namespace AdventureProject.Models.ViewModels
         public int ExpNeededToLevel { get; set; }
         public int Level { get; set; }
         public int CurrentLocationID { get; set; }
-        public int CurrentWeapon { get; set; }
-        public int CurrentArmor { get; set; }
+        public Weapon CurrentWeapon { get; set; }
+        public Armor CurrentArmor { get; set; }
 
         public PlayerCharacter()
         {

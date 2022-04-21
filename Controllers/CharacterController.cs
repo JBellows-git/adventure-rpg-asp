@@ -1,6 +1,6 @@
 ﻿using AdventureProject.Models;
 using AdventureProject.Models.DataModels;
-//using AdventureProject.Models.ViewModels;
+using AdventureProject.Models.ViewModels;
 using AdventureProject.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
@@ -26,16 +26,23 @@ namespace AdventureProject.Controllers
             _context = context;
             _userManager = userManager;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             //come back and add if statement to redirect to game if character already exists
-            
+            var user = await _userManager.GetUserAsync(User);
+            bool hasCharacter = _context.PlayerCharacters.Any(p => p.UserID == user.Id);
+            if (hasCharacter)
+            {
+                return RedirectToAction("Index", "GameController");
+            }
+
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateCharacterAsync(AdventureProject.Models.ViewModels.PlayerCharacter playerCharacter)
         {
+            
             bool existingName = _context.PlayerCharacters.Any(p => p.CharacterName == playerCharacter.CharacterName);
             if (existingName)
             {
@@ -55,10 +62,13 @@ namespace AdventureProject.Controllers
 
         private Models.DataModels.PlayerCharacter DMtoVMPlayer(Models.ViewModels.PlayerCharacter playerCharacter)
         {
-            var user = _userManager.GetUserAsync(User);
+            var user = _userManager.GetUserId(User);
+            
+            Models.DataModels.Weapon beginnerWeapon = (Models.DataModels.Weapon)_context.Items.SingleOrDefault(w => w.Name == "Club");
+            Models.DataModels.Armor beginnerArmor = (Models.DataModels.Armor)_context.Items.SingleOrDefault(a => a.Name == "Cloth Armor");
             Models.DataModels.PlayerCharacter dmPlayer = new Models.DataModels.PlayerCharacter()
             {
-                UserID = user.Id.ToString(),
+                UserID = user,
                 CharacterName = playerCharacter.CharacterName,
                 Gold = 0,
                 ExperiencePoints = 0,
@@ -66,7 +76,10 @@ namespace AdventureProject.Controllers
                 Level = 1,
                 CurrentLocationID = 1,
                 CurrentHitPoints = 10,
-                MaximumHitPoints = 10,                
+                MaximumHitPoints = 10,
+                CurrentWeapon = beginnerWeapon,
+                CurrentArmor = beginnerArmor
+                
             };
             return dmPlayer;
                 
