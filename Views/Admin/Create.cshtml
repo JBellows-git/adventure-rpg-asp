@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Admin Options";
+}
+
+<h2>Create Role</h2>
+
+<h4>@ViewBag.message</h4>
+
+@using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+        <div>
+            Role Name
+        </div>
+        <p>
+            @Html.TextBox("RoleName")
+        </p>
+        <input type="submit" value="Add Role" />
+    }

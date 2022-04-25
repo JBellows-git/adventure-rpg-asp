@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Admin Options";
+}
+
+<table>
+    <tr>
+        <td>UserName</td><td>Character Name</td>
+    </tr>
+    @foreach (var person in ViewBag.Users)
+    {
+        <tr>
+            <td>@person.Email</td>
+            
+        </tr>
+    }
+</table>
