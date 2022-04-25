@@ -33,7 +33,7 @@ namespace AdventureProject.Controllers
             bool hasCharacter = _context.PlayerCharacters.Any(p => p.UserID == user.Id);
             if (hasCharacter)
             {
-                return RedirectToAction("Index", "GameController");
+                return RedirectToAction("Index", "Game");
             }
 
             return View();
@@ -50,8 +50,23 @@ namespace AdventureProject.Controllers
                 
             } else
             {
-                Models.DataModels.PlayerCharacter newPlayer = DMtoVMPlayer(playerCharacter);
-                await _context.PlayerCharacters.AddAsync(newPlayer);
+                Models.DataModels.PlayerCharacter newPlayer = CreateNewPlayer(playerCharacter);                
+                await _context.PlayerCharacters.AddAsync(newPlayer);                
+                await _context.SaveChangesAsync();
+                Models.DataModels.Inventory weapon = new Models.DataModels.Inventory()
+                {
+                    PlayerCharacter = _context.PlayerCharacters.SingleOrDefault(p => p.CharacterName == newPlayer.CharacterName),
+                    Detail = newPlayer.CurrentWeapon,
+                    Quantity = 1
+                };
+                Models.DataModels.Inventory armor = new Models.DataModels.Inventory()
+                {
+                    PlayerCharacter = _context.PlayerCharacters.SingleOrDefault(p => p.CharacterName == newPlayer.CharacterName),
+                    Detail = newPlayer.CurrentArmor,
+                    Quantity = 1
+                };
+                await _context.Inventories.AddAsync(weapon);
+                await _context.Inventories.AddAsync(armor);
                 await _context.SaveChangesAsync();
             }
 
@@ -60,26 +75,24 @@ namespace AdventureProject.Controllers
 
 
 
-        private Models.DataModels.PlayerCharacter DMtoVMPlayer(Models.ViewModels.PlayerCharacter playerCharacter)
+        private Models.DataModels.PlayerCharacter CreateNewPlayer(Models.ViewModels.PlayerCharacter playerCharacter)
         {
             var user = _userManager.GetUserId(User);
             
-            Models.DataModels.Weapon beginnerWeapon = (Models.DataModels.Weapon)_context.Items.SingleOrDefault(w => w.Name == "Club");
+            Models.DataModels.Weapon beginnerWeapon = (Models.DataModels.Weapon)_context.Items.SingleOrDefault(w => w.Name == "Rusty Sword");
             Models.DataModels.Armor beginnerArmor = (Models.DataModels.Armor)_context.Items.SingleOrDefault(a => a.Name == "Cloth Armor");
+            Models.DataModels.Location beginningLocation = (Models.DataModels.Location)_context.Locations.SingleOrDefault(l => l.LocationName == "Home");
             Models.DataModels.PlayerCharacter dmPlayer = new Models.DataModels.PlayerCharacter()
             {
                 UserID = user,
-                CharacterName = playerCharacter.CharacterName,
-                Gold = 0,
-                ExperiencePoints = 0,
-                ExpNeededToLevel = 100,
-                Level = 1,
-                CurrentLocationID = 1,
+                CharacterName = playerCharacter.CharacterName,                
                 CurrentHitPoints = 10,
                 MaximumHitPoints = 10,
                 CurrentWeapon = beginnerWeapon,
-                CurrentArmor = beginnerArmor
-                
+                CurrentArmor = beginnerArmor,
+                ExpNeededToLevel = 100,
+                Level = 1,
+                CurrentLocationID = beginningLocation                
             };
             return dmPlayer;
                 

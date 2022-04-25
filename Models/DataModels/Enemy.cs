@@ -14,6 +14,7 @@ namespace AdventureProject.Models.DataModels
         public int RewardExperience { get; set; }
         public int RewardGold { get; set; }
         public List<LootItem> LootTable { get; set; }
+        
 
         public Enemy() : base() { }
 

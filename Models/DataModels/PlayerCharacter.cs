@@ -15,7 +15,7 @@ namespace AdventureProject.Models.DataModels
         public int ExperiencePoints { get; set; }
         public int ExpNeededToLevel { get; set; }
         public int Level { get; set; }
-        public int CurrentLocationID { get; set; }
+        public Location CurrentLocationID { get; set; }
         //Item IDs go here when constructing
         public Weapon CurrentWeapon { get; set; }
         public Armor CurrentArmor { get; set; }
@@ -24,7 +24,7 @@ namespace AdventureProject.Models.DataModels
         public PlayerCharacter() : base (){ }
 
         public PlayerCharacter(int currentHitPoints, int maximumHitpoints, int playerCharacterID, string userID, string characterName,
-            int gold, int experiencePoints, int expNeededToLevel, int level, int currentLocationID, Weapon currentWeapon, Armor currentArmor) : base(currentHitPoints, maximumHitpoints)
+            int gold, int experiencePoints, int expNeededToLevel, int level, Location currentLocationID, Weapon currentWeapon, Armor currentArmor) : base(currentHitPoints, maximumHitpoints)
         {
             PlayerCharacterID = playerCharacterID;
             UserID = userID;

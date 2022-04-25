@@ -2,28 +2,204 @@
 @{
     ViewData["Title"] = "Play the Game!";
 }
-
+<style>
+    table, th, td {border: 1px solid black;border-collapse: collapse;}    
+    td.label {text-align: right;font-weight: bold;}
+    div.info {border-right: 1px solid #000000}
+    p.locName{text-align: center; border-bottom: 1px solid black; font-size: 30px }
+</style>
 <div class="text-center">
     <h1 class="display-4"></h1>
-    <div style="float: left">
+    <div class="info" style="float: left; padding-right: 20px">
         <h3>@Model.Player.CharacterName</h3>
         <table>
             <tr>
-                <td>Level: </td><td>@Model.Player.Level</td><td></td>
+                <td class="label">Level: </td>
+                <td>@Model.Player.Level</td>
+                <td></td>
             </tr>
             <tr>
-                <td>Hit Points: </td><td>@Model.Player.CurrentHitPoints /</td><td>@Model.Player.MaximumHitPoints</td>                
+                <td class="label">Hit Points: </td>
+                <td>@Model.Player.CurrentHitPoints / @Model.Player.MaximumHitPoints</td>
+                <td></td>
             </tr>
             <tr>
-                <td>Experience Points: </td><td>@Model.Player.ExperiencePoints</td><td></td>
+                <td class="label">Experience Points: </td>
+                <td>@Model.Player.ExperiencePoints</td>
+                <td></td>
             </tr>
             <tr>
-                <td>Exp To Level: </td><td>@Model.Player.ExpNeededToLevel</td><td></td>
+                <td class="label">Exp To Level: </td>
+                <td>@Model.Player.ExpNeededToLevel</td>
+                <td></td>
             </tr>
             <tr>
-                <td>Weapon: </td><td>@Model.Player.CurrentWeapon.Name</td><td>@Model.Player.CurrentWeapon.MinimumDamage - @Model.Player.CurrentWeapon.MaximumDamage</td>
+                <td class="label">Weapon: </td>
+                <td>@Model.Player.CurrentWeapon.Name</td>
+                <td>@Model.Player.CurrentWeapon.MinimumDamage - @Model.Player.CurrentWeapon.MaximumDamage</td>
             </tr>
-            <tr></tr>
+            <tr>
+                <td class="label">Armor: </td>
+                <td>@Model.Player.CurrentArmor.Name</td>
+                <td>@Model.Player.CurrentArmor.DamageReduction</td>
+            </tr>
         </table>
+        <br />
+        <p><strong>Quest Log</strong></p>
+        <table>
+            <tr>
+                <th>Quest</th>
+                <th>Quest Description</th>
+                <th>Complete</th>
+            </tr>
+            @if (Model.QuestLog != null)
+            {
+                @foreach (var quest in Model.QuestLog)
+                {
+                    <tr>
+                        <td>@quest.CollectedQuest.QuestName</td>
+                        <td style="width: 200px">@quest.CollectedQuest.QuestDescription</td>
+                        <td>@quest.Completed</td>
+                    </tr>
+                }
+            }
+        </table>
+        <br />
+        <p><strong>Inventory</strong></p>
+        <table>
+            <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+            </tr>
+            @if (Model.Inventory != null)
+            {
+                @foreach (var item in Model.Inventory)
+                {
+                    <tr>
+                        @if (item.Quantity > 1)
+                        {
+                            <td>@item.Detail.PluralName</td>
+                        }
+                        else
+                        {
+                            <td>@item.Detail.Name</td>
+                        }
+                        <td>@item.Quantity</td>
+                    </tr>
+                }
+            }
+        </table>
+        <br />
+        <p><strong>Change Weapon</strong></p>
+        @using (Html.BeginForm("ChangeWeapon", "Game", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <select name="weapon">
+                @foreach (var weapon in ViewBag.weaponList)
+                {
+                    <option value="@weapon.Detail.ItemID">@weapon.Detail.Name</option>
+                }
+            </select>
+            <input type="hidden" name="player" value="@Model.Player.CharacterName" />
+            <input id="Submit" type="submit" value="Equip Weapon" />
+        }
+        <br />
+        <p><strong>Change Armor</strong></p>
+        @using (Html.BeginForm("ChangeArmor", "Game", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <select name="armor">
+                @foreach (var armor in ViewBag.armorList)
+                {
+                    <option value="@armor.Detail.ItemID">@armor.Detail.Name</option>
+                }
+            </select>
+            <input type="hidden" name="player" value="@Model.Player.CharacterName" />
+            <input id="Submit" type="submit" value="Equip Armor" />
+        }
+    </div>
+    <div style="overflow: hidden">
+        <p class="locName"><strong>Current Location: </strong>@Model.Player.CurrentLocationID.LocationName</p>
+        <div style="padding-left: 20px; padding-right: 20px">
+            <h4><u>Location Description</u></h4>
+            <p>@Model.Location.LocationDescription</p>
+            <br />
+            <br />
+            @if (Model.Location.QuestAvailableHere != null)
+            {
+                <h4><u>Quest Description</u></h4>
+                <p>@Model.Location.QuestAvailableHere.QuestDescription</p>
+                @if(!Model.QuestLog.Exists(x => x.CollectedQuest.QuestID == Model.Location.QuestAvailableHere.QuestID))
+                @using (Html.BeginForm("AcceptQuest", "Game", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    <input type="hidden" name="quest" value="@Model.Location.QuestAvailableHere.QuestID" />
+                    <input type="hidden" name="player" value="@Model.Player.CharacterName" />
+                    <input id="Submit" type="submit" value="Accept" />
+                }
+
+            }
+            @if (Model.Location.EnemyFightHere != null)
+            {
+                <p>You see a @Model.Location.EnemyFightHere.EnemyName</p>
+            }
+
+        </div>
+        <div style="padding-left: 10px">
+            <table style="border: none">
+                <tr style="border: none">
+                    <td style="border: none"></td>
+                    <td style="border: none">
+                        @if (Model.Location.LocationToNorth != null)
+                        {
+                            @using (Html.BeginForm("Move", "Game", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                            {
+                                <input type="hidden" name="newLocation" value="@Model.Location.LocationToNorth" />
+                                <input type="hidden" name="player" value="@Model.Player.CharacterName" />
+                                <input id="Submit" type="submit" value="Move North" />
+                            }
+                        }
+                    </td>
+                    <td style="border: none"></td>
+                </tr>
+                <tr style="border: none">
+                    <td style="border: none">
+                @if (Model.Location.LocationToWest != null)
+                {
+                    @using (Html.BeginForm("Move", "Game", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        <input type="hidden" name="newLocation" value="@Model.Location.LocationToWest" />
+                        <input type="hidden" name="player" value="@Model.Player.CharacterName" />
+                        <input id="Submit" type="submit" value="Move West" />
+                    }
+                }
+                </td>
+                    <td style="border: none"></td>
+                    <td style="border: none">
+                        @if (Model.Location.LocationToEast != null)
+                        {
+                            @using (Html.BeginForm("Move", "Game", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                            {
+                                <input type="hidden" name="newLocation" value="@Model.Location.LocationToEast" />
+                                <input type="hidden" name="player" value="@Model.Player.CharacterName" />
+                                <input id="Submit" type="submit" value="Move East" />
+                            }
+                        }
+                    </td>
+                </tr>
+                <tr style="border: none">
+                    <td style="border: none"></td>
+                    <td style="border: none">
+                        @if (Model.Location.LocationToSouth != null)
+                        {
+                            @using (Html.BeginForm("Move", "Game", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                            {
+                                <input type="hidden" name="newLocation" value="@Model.Location.LocationToSouth" />
+                                <input type="hidden" name="player" value="@Model.Player.CharacterName" />
+                                <input id="Submit" type="submit" value="Move South" />
+                            }
+                        }
+                    </td>
+                    <td style="border: none"></td>
+                </tr>
+            </table>
+        </div>
     </div>
 </div>
