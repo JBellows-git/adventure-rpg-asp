@@ -40,12 +40,12 @@ namespace AdventureProject.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<ActionResult> CreateAsync(IFormCollection collection)
         {
             var name = collection["RoleName"];
             try
             {
-                _roleManager.CreateAsync(new IdentityRole(name));
+                await _roleManager.CreateAsync(new IdentityRole(name));
                 ViewBag.message = "Creation Successful";
                 
             } catch {
