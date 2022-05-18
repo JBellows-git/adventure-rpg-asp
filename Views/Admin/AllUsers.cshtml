@@ -1,16 +1,51 @@
-﻿@{
+﻿@model List< AdventureProject.Models.ViewModels.UserView>
+@{
     ViewData["Title"] = "Admin Options";
 }
-
+<style>
+    td { padding-right: 20px;}     
+</style>
 <table>
     <tr>
-        <td>UserName</td><td>Character Name</td>
+        <td>UserName</td><td>Character Name</td><td>Roles</td><td>Assign Role</td>
     </tr>
-    @foreach (var person in ViewBag.Users)
+    @foreach (var person in Model)
     {
-        <tr>
-            <td>@person.Email</td>
-            
-        </tr>
+<tr>
+    <td>@person.Username</td>
+    @if (person.CharacterName != null || person.CharacterName != "")
+    {
+        <td>@person.CharacterName</td>
+    }
+    else
+    {
+        <td>No Character</td>
+    }
+    @if (person.Roles != null || person.Roles != "")
+    {
+        <td>
+            @person.Roles
+        </td>
+    }
+    else
+    {
+        <td>
+            Not Assigned a Role
+        </td>
+    }
+<td>
+    @using (Html.BeginForm("AssignRole", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <select name="role">
+            @foreach (var role in ViewBag.Roles)
+            {
+                <option value="@role.Name">@role.Name</option>
+            }
+        </select>
+        <input type="hidden" name="username" value="@person.Username" />
+        <input id="Submit" type="submit" value="Assign" />
+    }
+</td>
+</tr>
     }
 </table>
