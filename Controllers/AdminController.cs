@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AdventureProject.Data;
 using AdventureProject.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -11,11 +12,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AdventureProject.Controllers
 {
+    [Authorize(Roles ="Admin")]
     public class AdminController : Controller
     {
-        private ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
-        private RoleManager<IdentityRole> _roleManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         
         public AdminController(ApplicationDbContext context, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
         {
@@ -35,7 +37,7 @@ namespace AdventureProject.Controllers
 
         public async Task<IActionResult> AllUsers()
         {
-            //rework view to use new model instead of wonky dictionary that we removed
+            
             List<Models.ViewModels.UserView> userViews = new List<Models.ViewModels.UserView>();            
             var users = _userManager.Users.ToList();
             var players = _context.PlayerCharacters.ToList();

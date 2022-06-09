@@ -7,10 +7,13 @@
     td.label {text-align: right;font-weight: bold;}
     div.info {border-right: 1px solid #000000}
     p.locName{text-align: center; border-bottom: 1px solid black; font-size: 30px }
+    .left {float: left; padding-right: 20px; overflow: auto; width: 30%; border-right: 1px solid #000000}
+    .right{float: left; width: 70%; overflow: auto; padding: 1px}
 </style>
-<div class="text-center">
+
+<div class="text-center" style="overflow: hidden">
     <h1 class="display-4"></h1>
-    <div class="info" style="float: left; padding-right: 20px">
+    <div class="left" style="float: left; padding-right: 20px; overflow: auto">
         <h3>@Model.Player.CharacterName</h3>
         <table>
             <tr>
@@ -116,7 +119,7 @@
             <input id="Submit" type="submit" value="Equip Armor" />
         }
     </div>
-    <div style="overflow: hidden">
+    <div class="right">
         <p class="locName"><strong>Current Location: </strong>@Model.Player.CurrentLocationID.LocationName</p>
         <div style="padding-left: 20px; padding-right: 20px">
             <h4><u>Location Description</u></h4>
